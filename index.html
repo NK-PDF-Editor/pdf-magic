@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mera PDF Tool - Free</title>
+    <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background-color: #f0f2f5; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .container { background: white; padding: 40px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); text-align: center; max-width: 400px; }
+        h1 { color: #333; }
+        input[type="file"] { margin: 20px 0; border: 1px solid #ddd; padding: 10px; width: 100%; border-radius: 5px; }
+        button { background: #007bff; color: white; border: none; padding: 12px 25px; font-size: 16px; border-radius: 5px; cursor: pointer; transition: 0.3s; }
+        button:hover { background: #0056b3; }
+        p { color: #666; font-size: 14px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>PDF Joiner</h1>
+        <p>Do ya zyada PDF chunein aur unhe ek banayein.</p>
+        <input type="file" id="fileInput" multiple accept=".pdf">
+        <button onclick="mergePDFs()">Join & Download</button>
+    </div>
+
+    <script>
+        async function mergePDFs() {
+            const files = document.getElementById('fileInput').files;
+            if (files.length < 2) { alert("Kam se kam 2 files select karein!"); return; }
+            const { PDFDocument } = PDFLib;
+            const mergedPdf = await PDFDocument.create();
+            for (let file of files) {
+                const arrayBuffer = await file.arrayBuffer();
+                const pdf = await PDFDocument.load(arrayBuffer);
+                const copiedPages = await mergedPdf.copyPages(pdf, pdf.getPageIndices());
+                copiedPages.forEach((page) => mergedPdf.addPage(page));
+            }
+            const pdfBytes = await mergedPdf.save();
+            const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = 'merged.pdf';
+            link.click();
+        }
+    </script>
+</body>
+</html>
