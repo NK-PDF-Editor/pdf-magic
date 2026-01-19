@@ -3,126 +3,149 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PDF Hero - All-in-One PDF Tools</title>
+    <title>Smart PDF - All-in-One Professional Tools</title>
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
     <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
+
     <style>
-        .tool-card:hover { transform: translateY(-5px); transition: 0.3s; }
+        .tool-card { transition: all 0.3s ease; border: 1px solid #f1f5f9; }
+        .tool-card:hover { transform: translateY(-8px); box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1); border-color: #3b82f6; }
     </style>
 </head>
-<body class="bg-gray-50">
+<body class="bg-slate-50 min-h-screen font-sans">
 
-    <nav class="bg-white border-b p-4 shadow-sm">
-        <div class="max-w-6xl mx-auto flex justify-between items-center">
-            <h1 class="text-2xl font-black text-blue-600 cursor-pointer" onclick="location.reload()">PDF HERO</h1>
-            <div class="space-x-6 text-gray-600 font-medium">
-                <a href="#" class="hover:text-blue-600">All Tools</a>
-                <a href="#" class="hover:text-blue-600">Compress</a>
-                <a href="#" class="hover:text-blue-600">Edit</a>
-            </div>
+    <nav class="bg-white py-4 px-8 shadow-sm flex justify-between items-center sticky top-0 z-50">
+        <div class="text-2xl font-black text-blue-600 tracking-tighter cursor-pointer" onclick="location.reload()">
+            SMART<span class="text-slate-800">PDF</span>
+        </div>
+        <div class="hidden md:flex space-x-8 font-semibold text-slate-600">
+            <a href="index.html" class="hover:text-blue-600 transition">Home</a>
+            <a href="contact.html" class="hover:text-blue-600 transition">Contact</a>
+            <a href="privacy.html" class="hover:text-blue-600 transition">Privacy</a>
         </div>
     </nav>
 
-    <header class="text-center py-12">
-        <h2 class="text-4xl font-bold text-gray-800">PDF ke saath jo chahe wo karein</h2>
-        <p class="text-gray-500 mt-2 text-lg">Aasaan, Muft, aur Surakshit</p>
-    </header>
+    <div id="main-content" class="max-w-6xl mx-auto py-16 px-4">
+        <div class="text-center mb-16">
+            <h1 class="text-5xl font-extrabold text-slate-900 mb-4">PDF Tools Jo Kaam Aasaan Karein</h1>
+            <p class="text-xl text-slate-500 font-medium">Sejda jaisa power, ab aapke browser mein muft.</p>
+        </div>
 
-    <div id="tools-grid" class="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 px-4">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div onclick="openTool('Merge')" class="tool-card bg-white p-10 rounded-3xl text-center cursor-pointer group">
+                <i class="fas fa-layer-group text-5xl text-blue-500 mb-6 group-hover:scale-110 transition"></i>
+                <h3 class="text-2xl font-bold text-slate-800">Merge PDF</h3>
+                <p class="text-slate-400 mt-2">Kayi files ko ek banayein</p>
+            </div>
+
+            <div onclick="openTool('Delete')" class="tool-card bg-white p-10 rounded-3xl text-center cursor-pointer group">
+                <i class="fas fa-eraser text-5xl text-red-500 mb-6 group-hover:scale-110 transition"></i>
+                <h3 class="text-2xl font-bold text-slate-800">Delete Pages</h3>
+                <p class="text-slate-400 mt-2">Extra pages ko hatayein</p>
+            </div>
+
+            <div onclick="openTool('PDF to Image')" class="tool-card bg-white p-10 rounded-3xl text-center cursor-pointer group border-b-8">
+                <i class="fas fa-file-image text-5xl text-purple-500 mb-6 group-hover:scale-110 transition"></i>
+                <h3 class="text-2xl font-bold text-slate-800">PDF to Image</h3>
+                <p class="text-slate-400 mt-2">Pages ko JPG mein badlein</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="tool-ui" class="hidden max-w-2xl mx-auto mt-20 p-12 bg-white rounded-3xl shadow-2xl text-center">
+        <h2 id="ui-title" class="text-4xl font-black mb-4 text-slate-800">Tool</h2>
+        <p id="ui-desc" class="text-slate-500 mb-8 font-medium"></p>
         
-        <div onclick="showTool('merge')" class="tool-card bg-white p-8 rounded-xl shadow-sm border border-gray-100 text-center cursor-pointer hover:shadow-lg">
-            <div class="text-blue-500 text-4xl mb-4"><i class="fas fa-object-group"></i></div>
-            <h3 class="font-bold text-xl">Merge PDF</h3>
-            <p class="text-gray-400 text-sm mt-2">Multiple files ko ek banayein</p>
+        <div class="bg-slate-50 border-4 border-dashed border-slate-200 rounded-2xl p-10 mb-8">
+            <input type="file" id="pdfInput" class="block w-full text-sm text-slate-500 file:mr-4 file:py-3 file:px-6 file:rounded-full file:border-0 file:text-sm file:font-bold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer">
         </div>
 
-        <div onclick="showTool('delete')" class="tool-card bg-white p-8 rounded-xl shadow-sm border border-gray-100 text-center cursor-pointer hover:shadow-lg">
-            <div class="text-red-500 text-4xl mb-4"><i class="fas fa-trash-alt"></i></div>
-            <h3 class="font-bold text-xl">Delete Pages</h3>
-            <p class="text-gray-400 text-sm mt-2">Faltu pages ko hatayein</p>
-        </div>
-
-        <div onclick="showTool('rotate')" class="tool-card bg-white p-8 rounded-xl shadow-sm border border-gray-100 text-center cursor-pointer hover:shadow-lg">
-            <div class="text-orange-500 text-4xl mb-4"><i class="fas fa-redo"></i></div>
-            <h3 class="font-bold text-xl">Rotate PDF</h3>
-            <p class="text-gray-400 text-sm mt-2">Pages ko seedha karein</p>
-        </div>
-
+        <button id="runBtn" class="bg-blue-600 text-white px-12 py-4 rounded-full font-black text-xl hover:bg-slate-900 transition shadow-lg w-full mb-4">
+            START PROCESSING
+        </button>
+        <button onclick="location.reload()" class="text-slate-400 hover:text-red-500 transition font-bold">← Cancel</button>
     </div>
 
-    <div id="tool-ui" class="hidden max-w-2xl mx-auto mt-10 p-10 bg-white rounded-2xl shadow-xl border-2 border-dashed border-blue-200 text-center mx-4">
-        <h2 id="tool-title" class="text-2xl font-bold mb-4">Tool Name</h2>
-        <input type="file" id="fileInput" multiple class="hidden">
-        <label for="fileInput" class="bg-blue-600 text-white px-8 py-4 rounded-lg font-bold cursor-pointer hover:bg-blue-700 inline-block mb-4">
-            <i class="fas fa-cloud-upload-alt mr-2"></i> File Select Karein
-        </label>
-        <p class="text-gray-400" id="file-info">Koi file nahi chuni gayi</p>
-        <button id="actionBtn" class="mt-6 bg-green-500 text-white px-10 py-3 rounded-full font-bold hidden w-full">Process Karein</button>
-        <br>
-        <button onclick="location.reload()" class="mt-4 text-sm text-gray-500 underline">Wapas Jayein</button>
-    </div>
-
-    <footer class="bg-white border-t py-8 mt-20">
-    <div class="max-w-6xl mx-auto text-center">
-        <div class="space-x-6 mb-4 text-gray-500">
-            <a href="privacy.html" class="hover:text-blue-600">Privacy Policy</a>
-            <a href="terms.html" class="hover:text-blue-600">Terms of Use</a>
+    <footer class="bg-white border-t py-12 mt-20 text-center">
+        <div class="space-x-8 mb-6 text-slate-600 font-bold">
+            <a href="index.html" class="hover:text-blue-600">Home</a>
             <a href="contact.html" class="hover:text-blue-600">Contact Us</a>
+            <a href="privacy.html" class="hover:text-blue-600">Privacy Policy</a>
         </div>
-        <p class="text-gray-400 text-sm">© 2026 Smart PDF. All Rights Reserved.</p>
-    </div>
+        <p class="text-slate-400 text-sm">© 2026 Smart PDF Tool. All Rights Reserved.</p>
     </footer>
-    <script>
-        let currentMode = '';
-        const { PDFDocument } = PDFLib;
 
-        function showTool(mode) {
-            currentMode = mode;
-            document.getElementById('tools-grid').classList.add('hidden');
+    <script>
+        let mode = '';
+        const { PDFDocument } = PDFLib;
+        // PDF.js worker setup
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js';
+
+        function openTool(t) {
+            mode = t;
+            document.getElementById('main-content').classList.add('hidden');
             document.getElementById('tool-ui').classList.remove('hidden');
-            document.getElementById('tool-title').innerText = mode.toUpperCase() + " Tool";
-            document.getElementById('actionBtn').classList.remove('hidden');
+            document.getElementById('ui-title').innerText = t;
+            document.getElementById('pdfInput').multiple = (t === 'Merge');
             
-            // Multiple files only for merge
-            document.getElementById('fileInput').multiple = (mode === 'merge');
+            if(t === 'Merge') document.getElementById('ui-desc').innerText = "Kayi PDF files chunein aur unhe ek saath jodein.";
+            if(t === 'Delete') document.getElementById('ui-desc').innerText = "PDF upload karein, hum pehla page hata denge.";
+            if(t === 'PDF to Image') document.getElementById('ui-desc').innerText = "Har page ko ek JPG photo ki tarah download karein.";
         }
 
-        document.getElementById('fileInput').onchange = function(e) {
-            document.getElementById('file-info').innerText = e.target.files.length + " file(s) selected";
-        };
+        async function convertToImage(file) {
+            const arrayBuffer = await file.arrayBuffer();
+            const pdf = await pdfjsLib.getDocument({data: arrayBuffer}).promise;
+            for (let i = 1; i <= pdf.numPages; i++) {
+                const page = await pdf.getPage(i);
+                const viewport = page.getViewport({scale: 2});
+                const canvas = document.createElement('canvas');
+                const context = canvas.getContext('2d');
+                canvas.height = viewport.height;
+                canvas.width = viewport.width;
+                await page.render({canvasContext: context, viewport: viewport}).promise;
+                const link = document.createElement('a');
+                link.href = canvas.toDataURL('image/jpeg');
+                link.download = `Page_${i}.jpg`;
+                link.click();
+            }
+        }
 
-        document.getElementById('actionBtn').onclick = async function() {
-            const files = document.getElementById('fileInput').files;
-            if (files.length === 0) return alert("Pehle file chunein!");
+        document.getElementById('runBtn').onclick = async () => {
+            const files = document.getElementById('pdfInput').files;
+            if(!files.length) return alert("Kripya file select karein!");
 
-            const mergedPdf = await PDFDocument.create();
-
-            if (currentMode === 'merge') {
-                for (let file of files) {
-                    const pdf = await PDFDocument.load(await file.arrayBuffer());
-                    const pages = await mergedPdf.copyPages(pdf, pdf.getPageIndices());
-                    pages.forEach(p => mergedPdf.addPage(p));
-                }
-            } else if (currentMode === 'delete') {
-                const pdf = await PDFDocument.load(await files[0].arrayBuffer());
-                const pages = await mergedPdf.copyPages(pdf, pdf.getPageIndices());
-                pages.shift(); // Pehla page delete
-                pages.forEach(p => mergedPdf.addPage(p));
+            if(mode === 'PDF to Image') {
+                await convertToImage(files[0]);
+                alert("Processing complete! Images download ho rahi hain.");
+                return;
             }
 
-            const bytes = await mergedPdf.save();
-            download(bytes, currentMode + "_output.pdf");
-        };
+            const finalPdf = await PDFDocument.create();
+            if(mode === 'Merge') {
+                for (let f of files) {
+                    const doc = await PDFDocument.load(await f.arrayBuffer());
+                    const pages = await finalPdf.copyPages(doc, doc.getPageIndices());
+                    pages.forEach(p => finalPdf.addPage(p));
+                }
+            } else if (mode === 'Delete') {
+                const doc = await PDFDocument.load(await files[0].arrayBuffer());
+                const pages = await finalPdf.copyPages(doc, doc.getPageIndices());
+                pages.shift(); // Pehla page hataya
+                pages.forEach(p => finalPdf.addPage(p));
+            }
 
-        function download(bytes, name) {
-            const blob = new Blob([bytes], { type: "application/pdf" });
-            const link = document.createElement("a");
+            const bytes = await finalPdf.save();
+            const blob = new Blob([bytes], {type: 'application/pdf'});
+            const link = document.createElement('a');
             link.href = URL.createObjectURL(blob);
-            link.download = name;
+            link.download = mode + "_Success.pdf";
             link.click();
         }
     </script>
 </body>
 </html>
-
