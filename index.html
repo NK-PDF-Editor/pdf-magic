@@ -3,371 +3,470 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Smart PDF Ultra | 30+ Professional Tools</title>
+    <title>Smart PDF Ultra | Enterprise SaaS Solution</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
     
     <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
 
     <style>
-        body { font-family: 'Inter', sans-serif; scroll-behavior: smooth; }
-        .glass-nav { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(10px); }
-        .tool-card { @apply bg-white p-6 rounded-3xl border border-slate-100 shadow-sm hover:shadow-2xl hover:-translate-y-2 transition-all cursor-pointer flex flex-col items-center text-center group; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8fafc; }
         .hidden-section { display: none !important; }
-        .step-dot { @apply w-10 h-10 rounded-full flex items-center justify-center font-bold border-2 transition-all; }
-        .step-active { @apply bg-blue-600 text-white border-blue-600 scale-110 shadow-lg shadow-blue-200; }
-        .page-preview-item { cursor: grab; @apply relative border-2 border-slate-200 rounded-xl overflow-hidden hover:border-blue-500 transition-all; }
-        .page-preview-item:active { cursor: grabbing; }
-        #canvas-preview-render canvas { width: 100%; height: auto; border-radius: 12px; }
+        
+        /* Premium UI Elements */
+        .glass-header { background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(12px); }
+        .tool-grid-item { 
+            @apply bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm transition-all duration-300 cursor-pointer text-center relative overflow-hidden;
+        }
+        .tool-grid-item:hover { 
+            @apply shadow-2xl -translate-y-2 border-blue-100;
+        }
+        .tool-grid-item i { @apply text-4xl mb-4 transition-transform duration-300; }
+        .tool-grid-item:hover i { transform: scale(1.2); }
+
+        /* Step Progress */
+        .step-pill { @apply flex items-center gap-3 px-6 py-3 rounded-full font-bold text-sm transition-all; }
+        .step-pill.active { @apply bg-blue-600 text-white shadow-lg shadow-blue-200; }
+        .step-pill.pending { @apply bg-slate-100 text-slate-400; }
+
+        /* Rearrange Styles */
+        #rearrange-container .sortable-ghost { opacity: 0.2; background: #3b82f6; }
+        .page-thumb { @apply bg-white p-2 rounded-xl border-2 border-slate-100 shadow-sm hover:border-blue-500 transition-all; }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-900">
+<body class="min-h-screen flex flex-col">
 
-    <nav class="glass-nav border-b sticky top-0 z-[100] py-4 px-6 md:px-12 flex justify-between items-center">
-        <div class="flex items-center gap-3 cursor-pointer" onclick="location.reload()">
-            <div class="bg-gradient-to-br from-blue-600 to-indigo-700 p-2.5 rounded-2xl text-white shadow-xl rotate-3">
-                <i class="fas fa-file-pdf text-xl"></i>
+    <nav class="glass-header sticky top-0 z-[100] border-b border-slate-100 py-4 px-8 flex justify-between items-center">
+        <div class="flex items-center gap-2 cursor-pointer" onclick="location.reload()">
+            <div class="bg-blue-600 p-2.5 rounded-2xl text-white shadow-xl rotate-3">
+                <i class="fas fa-file-invoice text-xl"></i>
             </div>
-            <span class="text-2xl font-black tracking-tighter text-slate-800">SMART<span class="text-blue-600 font-extrabold underline decoration-blue-200">PDF</span></span>
+            <span class="text-2xl font-black text-slate-900 tracking-tighter">SMART<span class="text-blue-600">PDF</span></span>
         </div>
 
-        <div class="hidden lg:flex gap-10 font-semibold text-slate-500 text-sm uppercase tracking-widest">
-            <a href="#" class="hover:text-blue-600 transition">Tools</a>
-            <a href="#" class="hover:text-blue-600 transition">Compress</a>
-            <a href="#" class="hover:text-blue-600 transition">Convert</a>
+        <div class="hidden lg:flex items-center gap-10">
+            <a href="#all-tools" class="text-slate-600 font-bold hover:text-blue-600 transition">All Tools</a>
+            <a href="#" class="text-slate-600 font-bold hover:text-blue-600 transition">Solutions</a>
+            <a href="#" class="text-slate-600 font-bold hover:text-blue-600 transition">Pricing</a>
         </div>
 
-        <div id="auth-box" class="flex gap-4 items-center">
-            <button onclick="toggleAuthModal()" class="font-bold text-slate-600 hover:text-blue-600">Login</button>
-            <button onclick="toggleAuthModal()" class="bg-slate-900 text-white px-8 py-3 rounded-full font-bold shadow-xl hover:bg-blue-600 transition-all active:scale-95">Signup Free</button>
+        <div id="auth-controls" class="flex items-center gap-4">
+            <div id="logged-out-ui" class="flex gap-4">
+                <button onclick="openAuthModal('login')" class="font-bold text-slate-600 px-4">Login</button>
+                <button onclick="openAuthModal('signup')" class="bg-slate-900 text-white px-8 py-3 rounded-2xl font-bold shadow-xl hover:bg-blue-600 transition-all">Get Started</button>
+            </div>
+            <div id="logged-in-ui" class="hidden flex items-center gap-4 bg-blue-50 px-5 py-2 rounded-2xl border border-blue-100">
+                <span id="user-display-name" class="font-bold text-blue-700">User</span>
+                <button onclick="logout()" class="bg-white p-2 rounded-lg text-red-500 shadow-sm hover:bg-red-50 transition"><i class="fas fa-sign-out-alt"></i></button>
+            </div>
         </div>
     </nav>
 
-    <main class="container mx-auto px-4 py-12">
-        
-        <section id="dashboard-view" class="max-w-7xl mx-auto">
-            <div class="text-center mb-16">
-                <h1 class="text-5xl md:text-7xl font-black text-slate-900 mb-6 leading-tight">Professional <span class="text-blue-600">PDF Solutions.</span></h1>
-                <p class="text-xl text-slate-500 max-w-2xl mx-auto font-medium leading-relaxed">30 se zyada tools, fast processing, aur 100% privacy—sab kuch aapke browser mein.</p>
-            </div>
+    <main class="flex-grow">
 
-            <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6" id="tools-container">
+        <section id="hero-section" class="pt-20 pb-32 px-6">
+            <div class="max-w-7xl mx-auto text-center">
+                <div class="inline-flex items-center gap-2 bg-blue-50 text-blue-600 px-4 py-2 rounded-full font-black text-xs uppercase tracking-widest mb-8 animate-bounce">
+                    <i class="fas fa-sparkles"></i> World's Most Powerful PDF Tools
                 </div>
+                <h1 class="text-6xl md:text-8xl font-black text-slate-900 mb-8 tracking-tighter leading-none">
+                    Document Workflows, <br><span class="text-blue-600">Simpler & Faster.</span>
+                </h1>
+                <p class="text-xl text-slate-500 font-medium max-w-2xl mx-auto mb-20 leading-relaxed">
+                    30+ se zyada tools ka istemal karein. Sab kuch aapke local browser mein process hota hai, privacy ki 100% guarantee.
+                </p>
+
+                <div id="all-tools" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-8">
+                    </div>
+            </div>
         </section>
 
-        <section id="workflow-view" class="hidden-section max-w-5xl mx-auto">
-            <div class="flex items-center justify-center gap-4 mb-12">
-                <div class="flex flex-col items-center gap-2"><div id="s1-dot" class="step-dot step-active">1</div><span class="text-[10px] font-black uppercase tracking-widest">Upload</span></div>
-                <div class="w-16 h-[2px] bg-slate-200"></div>
-                <div class="flex flex-col items-center gap-2"><div id="s2-dot" class="step-dot border-slate-200 text-slate-300">2</div><span class="text-[10px] font-black uppercase tracking-widest">Settings</span></div>
-                <div class="w-16 h-[2px] bg-slate-200"></div>
-                <div class="flex flex-col items-center gap-2"><div id="s3-dot" class="step-dot border-slate-200 text-slate-300">3</div><span class="text-[10px] font-black uppercase tracking-widest">Download</span></div>
-            </div>
-
-            <div class="bg-white rounded-[3.5rem] shadow-[0_35px_60px_-15px_rgba(0,0,0,0.1)] border border-slate-100 p-8 md:p-14 overflow-hidden relative">
-                <div id="active-tool-badge" class="absolute top-0 right-10 bg-blue-600 text-white px-6 py-2 rounded-b-2xl font-black text-xs uppercase tracking-tighter">TOOL</div>
+        <section id="workflow-section" class="hidden-section py-20 bg-white">
+            <div class="max-w-6xl mx-auto px-6">
                 
-                <div id="step-1-area">
-                    <div class="text-center mb-10">
-                        <h2 class="text-4xl font-black text-slate-800">Files Upload Karein</h2>
-                        <p class="text-slate-400 mt-2 font-medium">Drag & drop karein ya local storage se chunein</p>
-                    </div>
-                    <div class="border-[6px] border-dashed border-slate-50 rounded-[3rem] p-16 text-center group hover:bg-blue-50/50 hover:border-blue-100 transition-all cursor-pointer relative">
-                        <input type="file" id="file-uploader" class="absolute inset-0 opacity-0 cursor-pointer" multiple>
-                        <div id="upload-prompt">
-                            <div class="w-24 h-24 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition">
-                                <i class="fas fa-cloud-arrow-up text-4xl"></i>
-                            </div>
-                            <p class="text-2xl font-black text-slate-400 group-hover:text-blue-600 transition">Select PDF / Images</p>
-                        </div>
-                    </div>
+                <div class="flex justify-center items-center gap-4 mb-16">
+                    <div id="step-nav-1" class="step-pill active">01 <span class="hidden md:inline">Upload</span></div>
+                    <div class="h-0.5 w-12 bg-slate-100"></div>
+                    <div id="step-nav-2" class="step-pill pending">02 <span class="hidden md:inline">Settings</span></div>
+                    <div class="h-0.5 w-12 bg-slate-100"></div>
+                    <div id="step-nav-3" class="step-pill pending">03 <span class="hidden md:inline">Preview & Download</span></div>
                 </div>
 
-                <div id="step-2-area" class="hidden-section">
-                    <div class="text-center mb-8">
-                        <h2 class="text-3xl font-black text-slate-800">Customize Results</h2>
-                        <p class="text-slate-400 mt-1 font-medium">Pages ko rearrange karein ya settings badlein</p>
-                    </div>
-                    
-                    <div id="compress-settings" class="hidden-section mb-8 p-6 bg-blue-50 rounded-3xl border border-blue-100">
-                        <label class="block font-black text-blue-800 mb-3">Compression Level:</label>
-                        <select id="comp-lvl" class="w-full p-4 rounded-2xl bg-white border-none shadow-sm font-bold outline-none focus:ring-2 ring-blue-500">
-                            <option value="0.4">Extreme (Smallest Size, Normal Quality)</option>
-                            <option value="0.7" selected>Recommended (Balanced Quality)</option>
-                            <option value="0.9">Minimal (Best Quality, Large Size)</option>
-                        </select>
+                <div class="bg-[#fcfdfe] rounded-[4rem] border border-slate-100 shadow-2xl p-10 md:p-20 relative">
+                    <div id="current-tool-label" class="absolute -top-6 left-1/2 -translate-x-1/2 bg-slate-900 text-white px-10 py-3 rounded-full font-black text-sm uppercase tracking-widest shadow-2xl">
+                        Tool Name
                     </div>
 
-                    <div id="rearrange-grid" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6 max-h-[400px] overflow-y-auto p-4 bg-slate-50 rounded-[2rem]">
+                    <div id="step-1-ui" class="space-y-10">
+                        <div class="text-center">
+                            <h2 class="text-4xl font-black text-slate-900 mb-4">Choose Files</h2>
+                            <p class="text-slate-400 font-medium italic">Supports PDF, PNG, JPG, and Word files.</p>
                         </div>
-                </div>
+                        <div class="relative border-4 border-dashed border-slate-100 rounded-[3rem] p-24 text-center group hover:bg-white hover:border-blue-400 transition-all cursor-pointer">
+                            <input type="file" id="file-input-master" class="absolute inset-0 opacity-0 cursor-pointer" multiple>
+                            <div id="upload-idle">
+                                <i class="fas fa-cloud-upload-alt text-7xl text-blue-200 group-hover:text-blue-500 transition-all mb-6"></i>
+                                <p class="text-2xl font-black text-slate-300 group-hover:text-slate-600 transition-all uppercase tracking-tighter">Drag & Drop Documents Here</p>
+                            </div>
+                            <div id="upload-ready" class="hidden">
+                                <i class="fas fa-check-circle text-7xl text-green-500 mb-6"></i>
+                                <p id="file-count-text" class="text-2xl font-black text-slate-800">3 Files Selected</p>
+                            </div>
+                        </div>
+                    </div>
 
-                <div id="step-3-area" class="hidden-section">
-                    <div class="grid md:grid-cols-2 gap-12 items-center">
-                        <div id="canvas-preview-render" class="bg-slate-200 p-4 rounded-[2.5rem] shadow-inner rotate-1">
+                    <div id="step-2-ui" class="hidden-section space-y-10">
+                        <div class="text-center">
+                            <h2 class="text-4xl font-black text-slate-900 mb-4">Customize Output</h2>
+                            <p class="text-slate-400 font-medium italic">Adjust settings or rearrange pages as needed.</p>
+                        </div>
+                        
+                        <div id="settings-panel" class="bg-white p-8 rounded-[2.5rem] shadow-sm border border-slate-100 space-y-8">
+                            <div id="set-compress" class="hidden">
+                                <label class="block font-black text-slate-700 mb-4 text-lg">Compression Strength</label>
+                                <div class="grid grid-cols-3 gap-4">
+                                    <button class="comp-btn border-2 p-4 rounded-2xl font-bold hover:border-blue-500 focus:bg-blue-600 focus:text-white" data-val="0.3">Extreme</button>
+                                    <button class="comp-btn border-2 p-4 rounded-2xl font-bold border-blue-500 bg-blue-50" data-val="0.6">Balanced</button>
+                                    <button class="comp-btn border-2 p-4 rounded-2xl font-bold hover:border-blue-500" data-val="0.9">High Quality</button>
+                                </div>
                             </div>
-                        <div class="text-left">
-                            <div class="bg-green-50 text-green-700 px-4 py-1 rounded-full text-xs font-black inline-block mb-4">SUCCESSFULLY PROCESSED</div>
-                            <h2 class="text-4xl font-black text-slate-900 mb-2">Aapki File Ready Hai!</h2>
-                            <div class="space-y-3 mb-8">
-                                <p class="text-slate-500 font-bold flex items-center gap-2"><i class="fas fa-hdd opacity-50"></i> Size: <span id="res-size">--</span></p>
-                                <p class="text-slate-500 font-bold flex items-center gap-2"><i class="fas fa-copy opacity-50"></i> Pages: <span id="res-pages">--</span></p>
+                            <div id="rearrange-wrapper" class="hidden">
+                                <p class="font-black text-slate-700 mb-6">Drag pages to change order:</p>
+                                <div id="rearrange-container" class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6 max-h-[500px] overflow-y-auto p-4">
+                                    </div>
                             </div>
-                            <button onclick="downloadFinal()" class="w-full bg-blue-600 text-white py-6 rounded-3xl font-black text-2xl shadow-2xl shadow-blue-200 hover:bg-slate-900 transition-all flex items-center justify-center gap-4 active:scale-95">
-                                <i class="fas fa-download"></i> DOWNLOAD NOW
+                            <div id="set-protect" class="hidden">
+                                <label class="block font-black text-slate-700 mb-2">Set PDF Password</label>
+                                <input type="password" id="pdf-pass" placeholder="Enter secure password" class="w-full p-5 rounded-2xl bg-slate-50 border-none ring-2 ring-slate-100 focus:ring-blue-500 outline-none font-bold">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="step-3-ui" class="hidden-section">
+                        <div class="grid lg:grid-cols-2 gap-16 items-center">
+                            <div class="bg-slate-200 p-4 rounded-[3rem] shadow-inner" id="final-preview-box">
+                                </div>
+                            <div class="space-y-8">
+                                <div class="inline-block bg-green-100 text-green-700 px-6 py-2 rounded-full font-black text-xs uppercase">File Ready for Download</div>
+                                <h2 class="text-5xl font-black text-slate-900 leading-tight">Your document is <span class="text-blue-600">Optimized.</span></h2>
+                                <div class="flex flex-col gap-4 text-slate-500 font-bold">
+                                    <div class="flex items-center gap-3"><i class="fas fa-file-pdf text-blue-600"></i> Size: <span id="meta-size">--</span></div>
+                                    <div class="flex items-center gap-3"><i class="fas fa-copy text-blue-600"></i> Total Pages: <span id="meta-pages">--</span></div>
+                                </div>
+                                <button onclick="triggerDownload()" class="w-full bg-blue-600 text-white py-7 rounded-[2rem] font-black text-2xl shadow-2xl shadow-blue-200 hover:bg-slate-900 hover:-translate-y-1 transition-all flex items-center justify-center gap-4">
+                                    <i class="fas fa-file-download"></i> DOWNLOAD NOW
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex justify-between items-center mt-20 pt-10 border-t border-slate-100">
+                        <button onclick="location.reload()" class="text-slate-400 font-bold uppercase text-xs tracking-widest hover:text-red-500 transition">Cancel Process</button>
+                        <div class="flex gap-4">
+                            <button id="back-btn" onclick="goToStep(currentStep-1)" class="hidden-section px-10 py-4 rounded-2xl font-bold border-2 border-slate-100 text-slate-500 hover:bg-slate-50 transition">Back</button>
+                            <button id="next-btn" onclick="processStepTransition()" class="bg-slate-900 text-white px-12 py-4 rounded-2xl font-black uppercase tracking-tighter hover:bg-blue-600 transition-all shadow-xl">
+                                Next Step <i class="fas fa-chevron-right ml-2"></i>
                             </button>
                         </div>
                     </div>
                 </div>
-
-                <div class="mt-12 pt-8 border-t flex justify-between items-center">
-                    <button onclick="location.reload()" class="text-slate-400 font-bold hover:text-red-500 uppercase text-xs tracking-widest">Cancel & Exit</button>
-                    <div class="flex gap-4">
-                        <button id="prev-step-btn" onclick="prevStep()" class="hidden-section px-8 py-3 rounded-2xl font-bold border-2 text-slate-500 hover:bg-slate-50">Back</button>
-                        <button id="next-step-btn" onclick="nextStep()" class="bg-slate-900 text-white px-10 py-4 rounded-2xl font-black uppercase tracking-tighter hover:bg-blue-600 transition-all">Next Step <i class="fas fa-arrow-right ml-2"></i></button>
-                    </div>
-                </div>
             </div>
         </section>
+
     </main>
 
-    <footer class="bg-white border-t py-16 mt-20">
-        <div class="container mx-auto px-10 grid md:grid-cols-4 gap-12">
-            <div class="col-span-2">
-                <span class="text-2xl font-black italic">SMART<span class="text-blue-600">PDF</span></span>
-                <p class="mt-6 text-slate-500 font-medium max-w-sm leading-relaxed">Duniya ka sabse advanced browser-based PDF toolset. Hum data server par upload nahi karte, sab kuch aapke PC par process hota hai. 100% Private.</p>
+    <footer class="bg-white border-t border-slate-100 pt-24 pb-12 px-8">
+        <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-16 mb-20">
+            <div class="col-span-1 md:col-span-2 space-y-6">
+                <span class="text-3xl font-black tracking-tighter">SMART<span class="text-blue-600">PDF</span></span>
+                <p class="text-slate-500 font-medium max-w-sm leading-relaxed">The only PDF toolkit you'll ever need. Secure, serverless, and enterprise-grade tools available for free in your browser.</p>
+                <div class="flex gap-4">
+                    <div class="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-xl shadow-sm"><i class="fab fa-twitter"></i></div>
+                    <div class="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-xl shadow-sm"><i class="fab fa-linkedin-in"></i></div>
+                    <div class="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-xl shadow-sm"><i class="fab fa-github"></i></div>
+                </div>
             </div>
             <div>
-                <h4 class="font-black text-slate-900 mb-6 uppercase text-xs tracking-widest">Navigation</h4>
+                <h4 class="font-black text-slate-900 uppercase text-xs tracking-widest mb-8">Quick Tools</h4>
                 <ul class="space-y-4 text-slate-500 font-bold text-sm">
-                    <li><a href="#" class="hover:text-blue-600">Home</a></li>
-                    <li><a href="#" class="hover:text-blue-600">Merge PDF</a></li>
-                    <li><a href="#" class="hover:text-blue-600">Compress PDF</a></li>
+                    <li><a href="#" class="hover:text-blue-600 transition">Merge PDF</a></li>
+                    <li><a href="#" class="hover:text-blue-600 transition">Compress PDF</a></li>
+                    <li><a href="#" class="hover:text-blue-600 transition">Split PDF</a></li>
+                    <li><a href="#" class="hover:text-blue-600 transition">Word to PDF</a></li>
                 </ul>
             </div>
             <div>
-                <h4 class="font-black text-slate-900 mb-6 uppercase text-xs tracking-widest">Support</h4>
+                <h4 class="font-black text-slate-900 uppercase text-xs tracking-widest mb-8">Trust & Safety</h4>
                 <ul class="space-y-4 text-slate-500 font-bold text-sm">
-                    <li><a href="#" class="hover:text-blue-600">Privacy Policy</a></li>
-                    <li><a href="#" class="hover:text-blue-600">Terms of Use</a></li>
-                    <li><a href="#" class="hover:text-blue-600 text-green-600">Contact Developer</a></li>
+                    <li><a href="#" class="hover:text-blue-600 transition">Privacy Policy</a></li>
+                    <li><a href="#" class="hover:text-blue-600 transition">Terms of Service</a></li>
+                    <li><a href="#" class="hover:text-blue-600 transition">Security Shield</a></li>
                 </ul>
             </div>
+        </div>
+        <div class="text-center pt-10 border-t border-slate-50 text-slate-400 font-bold text-xs uppercase tracking-widest">
+            © 2026 Smart PDF Tool Suite • Built for Enterprise Efficiency
         </div>
     </footer>
 
     <script>
-        // --- 1. CONFIGURATION & DATA ---
-        const TOOL_LIST = [
-            {id: 'Rearrange', icon: 'fa-sort-amount-down', color: 'text-indigo-500'},
-            {id: 'Merge PDF', icon: 'fa-layer-group', color: 'text-blue-500'},
-            {id: 'Compress PDF', icon: 'fa-compress-arrows-alt', color: 'text-red-500'},
-            {id: 'JPG to PDF', icon: 'fa-images', color: 'text-emerald-500'},
-            {id: 'PDF to JPG', icon: 'fa-file-image', color: 'text-orange-500'},
-            {id: 'Protect PDF', icon: 'fa-lock', color: 'text-black'},
-            {id: 'Unlock PDF', icon: 'fa-unlock', color: 'text-slate-400'},
-            {id: 'Rotate PDF', icon: 'fa-sync', color: 'text-sky-500'},
-            {id: 'Watermark', icon: 'fa-stamp', color: 'text-rose-500'},
-            {id: 'Page Numbers', icon: 'fa-list-ol', color: 'text-blue-800'},
-            {id: 'Delete Pages', icon: 'fa-eraser', color: 'text-pink-500'},
-            {id: 'Split PDF', icon: 'fa-scissors', color: 'text-violet-500'},
-            {id: 'Word to PDF', icon: 'fa-file-word', color: 'text-blue-700'},
-            {id: 'Excel to PDF', icon: 'fa-file-excel', color: 'text-green-700'},
-            {id: 'PPT to PDF', icon: 'fa-file-powerpoint', color: 'text-orange-700'},
-            {id: 'PDF to Word', icon: 'fa-file-lines', color: 'text-blue-400'},
-            {id: 'OCR PDF', icon: 'fa-eye', color: 'text-emerald-600'},
-            {id: 'Repair PDF', icon: 'fa-medkit', color: 'text-red-600'},
-            {id: 'Sign PDF', icon: 'fa-signature', color: 'text-slate-800'},
-            {id: 'Extract IMG', icon: 'fa-camera-retro', color: 'text-yellow-600'},
-            {id: 'PDF to HTML', icon: 'fa-code', color: 'text-indigo-700'},
-            {id: 'Grayscale', icon: 'fa-tint-slash', color: 'text-slate-500'},
-            {id: 'Flatten PDF', icon: 'fa-clone', color: 'text-cyan-600'},
-            {id: 'Crop PDF', icon: 'fa-crop-alt', color: 'text-teal-600'},
-            {id: 'Resize PDF', icon: 'fa-expand-arrows-alt', color: 'text-fuchsia-600'},
-            {id: 'Edit PDF', icon: 'fa-pen-to-square', color: 'text-blue-500'},
-            {id: 'Organize', icon: 'fa-folder-tree', color: 'text-amber-600'},
-            {id: 'Compare PDF', icon: 'fa-not-equal', color: 'text-rose-800'},
-            {id: 'Web to PDF', icon: 'fa-globe', color: 'text-sky-600'},
-            {id: 'Optimise PDF', icon: 'fa-bolt', color: 'text-yellow-500'}
+        // --- DATA & CONFIG ---
+        const TOOLS_DB = [
+            { id: 'Merge PDF', icon: 'fa-layer-group', color: 'text-blue-500', cat: 'optimize' },
+            { id: 'Compress PDF', icon: 'fa-compress-arrows-alt', color: 'text-rose-500', cat: 'optimize' },
+            { id: 'Split PDF', icon: 'fa-scissors', color: 'text-indigo-500', cat: 'edit' },
+            { id: 'Rearrange', icon: 'fa-sort-amount-down', color: 'text-emerald-500', cat: 'edit' },
+            { id: 'JPG to PDF', icon: 'fa-images', color: 'text-orange-500', cat: 'convert' },
+            { id: 'PDF to JPG', icon: 'fa-file-image', color: 'text-purple-500', cat: 'convert' },
+            { id: 'Word to PDF', icon: 'fa-file-word', color: 'text-blue-700', cat: 'convert' },
+            { id: 'Excel to PDF', icon: 'fa-file-excel', color: 'text-green-700', cat: 'convert' },
+            { id: 'Protect PDF', icon: 'fa-lock', color: 'text-slate-900', cat: 'security' },
+            { id: 'Unlock PDF', icon: 'fa-unlock', color: 'text-slate-400', cat: 'security' },
+            { id: 'Watermark', icon: 'fa-stamp', color: 'text-pink-600', cat: 'edit' },
+            { id: 'Rotate PDF', icon: 'fa-sync', color: 'text-yellow-500', cat: 'edit' },
+            { id: 'Page Numbers', icon: 'fa-list-ol', color: 'text-sky-600', cat: 'edit' },
+            { id: 'Delete Pages', icon: 'fa-eraser', color: 'text-red-400', cat: 'edit' },
+            { id: 'Extract Text', icon: 'fa-font', color: 'text-indigo-800', cat: 'optimize' },
+            { id: 'OCR PDF', icon: 'fa-eye', color: 'text-teal-600', cat: 'security' },
+            { id: 'Repair PDF', icon: 'fa-medkit', color: 'text-red-600', cat: 'optimize' },
+            { id: 'Sign PDF', icon: 'fa-signature', color: 'text-slate-700', cat: 'edit' },
+            { id: 'PDF to Word', icon: 'fa-file-lines', color: 'text-blue-400', cat: 'convert' },
+            { id: 'Flatten PDF', icon: 'fa-clone', color: 'text-cyan-600', cat: 'optimize' },
+            { id: 'Crop PDF', icon: 'fa-crop', color: 'text-lime-600', cat: 'edit' },
+            { id: 'Resize PDF', icon: 'fa-expand-arrows-alt', color: 'text-fuchsia-600', cat: 'optimize' },
+            { id: 'Grayscale', icon: 'fa-tint-slash', color: 'text-slate-400', cat: 'optimize' },
+            { id: 'HTML to PDF', icon: 'fa-code', color: 'text-violet-600', cat: 'convert' },
+            { id: 'Organize', icon: 'fa-folder-tree', color: 'text-amber-600', cat: 'edit' },
+            { id: 'Web to PDF', icon: 'fa-globe', color: 'text-blue-500', cat: 'convert' },
+            { id: 'Compare PDF', icon: 'fa-not-equal', color: 'text-rose-800', cat: 'security' },
+            { id: 'Edit PDF', icon: 'fa-pen-to-square', color: 'text-blue-600', cat: 'edit' },
+            { id: 'Extract IMG', icon: 'fa-camera-retro', color: 'text-yellow-600', cat: 'convert' },
+            { id: 'Optimise', icon: 'fa-bolt', color: 'text-yellow-400', cat: 'optimize' }
         ];
 
         let currentTool = '';
         let currentStep = 1;
         let uploadedFiles = [];
-        let finalPdfBlob = null;
+        let finalBlob = null;
+        let pdfPreviewData = null;
 
         const { PDFDocument } = PDFLib;
         pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
 
-        // --- 2. UI INITIALIZATION ---
-        const dashboard = document.getElementById('tools-container');
-        TOOL_LIST.forEach(tool => {
-            const card = document.createElement('div');
-            card.className = 'tool-card';
-            card.onclick = () => initTool(tool.id);
-            card.innerHTML = `
-                <div class="w-14 h-14 bg-slate-50 ${tool.color} rounded-2xl flex items-center justify-center mb-4 group-hover:bg-blue-600 group-hover:text-white transition-all shadow-sm">
-                    <i class="fas ${tool.icon} text-2xl"></i>
-                </div>
-                <h3 class="font-black text-[10px] uppercase tracking-tighter text-slate-700">${tool.id}</h3>
-            `;
-            dashboard.appendChild(card);
-        });
+        // --- UI INITIALIZER ---
+        function initDashboard() {
+            const container = document.getElementById('all-tools');
+            TOOLS_DB.forEach(tool => {
+                const div = document.createElement('div');
+                div.className = 'tool-grid-item group';
+                div.onclick = () => startWorkflow(tool.id);
+                div.innerHTML = `
+                    <i class="fas ${tool.icon} ${tool.color}"></i>
+                    <h3 class="font-black text-[10px] uppercase tracking-widest text-slate-700">${tool.id}</h3>
+                    <div class="absolute -bottom-1 -right-1 w-10 h-10 bg-slate-50 rounded-tl-3xl group-hover:bg-blue-600 transition-colors flex items-center justify-center">
+                        <i class="fas fa-arrow-right text-[10px] text-slate-200 group-hover:text-white mb-0"></i>
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+        }
 
-        // --- 3. WORKFLOW CONTROLLER ---
-        function initTool(id) {
+        // --- AUTH SYSTEM ---
+        function openAuthModal(type) {
+            const name = prompt("Aapka Naam?");
+            if(name) {
+                localStorage.setItem('pdf_user', name);
+                checkAuth();
+            }
+        }
+
+        function checkAuth() {
+            const user = localStorage.getItem('pdf_user');
+            if(user) {
+                document.getElementById('logged-out-ui').classList.add('hidden');
+                document.getElementById('logged-in-ui').classList.remove('hidden');
+                document.getElementById('user-display-name').innerText = user;
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('pdf_user');
+            location.reload();
+        }
+
+        // --- WORKFLOW CONTROLLER ---
+        function startWorkflow(id) {
             currentTool = id;
-            document.getElementById('dashboard-view').classList.add('hidden-section');
-            document.getElementById('workflow-view').classList.remove('hidden-section');
-            document.getElementById('active-tool-badge').innerText = id;
+            document.getElementById('hero-section').classList.add('hidden-section');
+            document.getElementById('workflow-section').classList.remove('hidden-section');
+            document.getElementById('current-tool-label').innerText = id;
             window.scrollTo(0,0);
         }
 
-        async function nextStep() {
+        document.getElementById('file-input-master').onchange = function(e) {
+            if(e.target.files.length > 0) {
+                uploadedFiles = Array.from(e.target.files);
+                document.getElementById('upload-idle').classList.add('hidden');
+                document.getElementById('upload-ready').classList.remove('hidden');
+                document.getElementById('file-count-text').innerText = `${uploadedFiles.length} Files Selected`;
+            }
+        };
+
+        async function processStepTransition() {
             if(currentStep === 1) {
-                const files = document.getElementById('file-uploader').files;
-                if(!files.length) return alert("Pehle file upload karein!");
-                uploadedFiles = Array.from(files);
-                
-                // Transition to Step 2
-                document.getElementById('step-1-area').classList.add('hidden-section');
-                document.getElementById('step-2-area').classList.remove('hidden-section');
-                document.getElementById('s2-dot').classList.add('step-active');
-                document.getElementById('prev-step-btn').classList.remove('hidden-section');
-                currentStep = 2;
-
-                renderConfigurationUI();
+                if(uploadedFiles.length === 0) return alert("Pehle file upload karein!");
+                goToStep(2);
+                renderStep2UI();
             } else if(currentStep === 2) {
-                // Transition to Step 3
-                processFinalPDF();
+                await processFinalDocument();
             }
         }
 
-        function prevStep() {
-            if(currentStep === 2) {
-                document.getElementById('step-2-area').classList.add('hidden-section');
-                document.getElementById('step-1-area').classList.remove('hidden-section');
-                document.getElementById('s2-dot').classList.remove('step-active');
-                document.getElementById('prev-step-btn').classList.add('hidden-section');
-                currentStep = 1;
-            }
-        }
-
-        // --- 4. STEP 2: CONFIGURATION RENDERER ---
-        async function renderConfigurationUI() {
-            const grid = document.getElementById('rearrange-grid');
-            const compSet = document.getElementById('compress-settings');
-            grid.innerHTML = '<p class="col-span-full py-10 text-center font-bold text-slate-400">Loading Configuration...</p>';
+        function goToStep(step) {
+            currentStep = step;
+            // UI Hide All
+            document.getElementById('step-1-ui').classList.add('hidden-section');
+            document.getElementById('step-2-ui').classList.add('hidden-section');
+            document.getElementById('step-3-ui').classList.add('hidden-section');
             
-            compSet.classList.toggle('hidden-section', currentTool !== 'Compress PDF');
+            // Show Active
+            document.getElementById(`step-${step}-ui`).classList.remove('hidden-section');
+
+            // Update Nav
+            for(let i=1; i<=3; i++) {
+                const nav = document.getElementById(`step-nav-${i}`);
+                if(i === step) { nav.className = 'step-pill active'; }
+                else if(i < step) { nav.className = 'step-pill active opacity-50'; }
+                else { nav.className = 'step-pill pending'; }
+            }
+
+            document.getElementById('back-btn').classList.toggle('hidden-section', step === 1);
+            document.getElementById('next-btn').classList.toggle('hidden-section', step === 3);
+        }
+
+        // --- STEP 2 LOGIC: RENDER SETTINGS ---
+        async function renderStep2UI() {
+            const rearrangeWrapper = document.getElementById('rearrange-wrapper');
+            const compressPanel = document.getElementById('set-compress');
+            const protectPanel = document.getElementById('set-protect');
+            const grid = document.getElementById('rearrange-container');
+
+            // Reset
+            rearrangeWrapper.classList.add('hidden');
+            compressPanel.classList.add('hidden');
+            protectPanel.classList.add('hidden');
 
             if(currentTool === 'Rearrange' || currentTool === 'Delete Pages' || currentTool === 'Rotate PDF') {
-                grid.classList.remove('hidden-section');
-                const fileBytes = await uploadedFiles[0].arrayBuffer();
-                const pdf = await pdfjsLib.getDocument({data: fileBytes}).promise;
+                rearrangeWrapper.classList.remove('hidden');
+                grid.innerHTML = '<p class="col-span-full text-center font-bold text-slate-400">Rendering Pages...</p>';
+                
+                const bytes = await uploadedFiles[0].arrayBuffer();
+                const pdf = await pdfjsLib.getDocument({data: bytes}).promise;
                 grid.innerHTML = '';
 
                 for(let i=1; i<=pdf.numPages; i++) {
                     const page = await pdf.getPage(i);
                     const canvas = document.createElement('canvas');
-                    const vp = page.getViewport({scale: 0.3});
-                    canvas.height = vp.height; canvas.width = vp.width;
-                    await page.render({canvasContext: canvas.getContext('2d'), viewport: vp}).promise;
+                    const viewport = page.getViewport({scale: 0.2});
+                    canvas.height = viewport.height;
+                    canvas.width = viewport.width;
+                    await page.render({canvasContext: canvas.getContext('2d'), viewport}).promise;
 
                     const div = document.createElement('div');
-                    div.className = "page-preview-item bg-white p-2";
-                    div.setAttribute('data-index', i-1);
+                    div.className = "page-thumb relative group";
+                    div.setAttribute('data-id', i-1);
                     div.innerHTML = `
-                        <img src="${canvas.toDataURL()}" class="w-full">
-                        <div class="absolute top-1 right-1 bg-black/50 text-white text-[8px] px-2 py-0.5 rounded-full">${i}</div>
+                        <img src="${canvas.toDataURL()}" class="w-full h-auto rounded-lg">
+                        <div class="absolute inset-0 bg-blue-600/10 opacity-0 group-hover:opacity-100 transition-opacity rounded-lg"></div>
+                        <span class="absolute bottom-1 right-2 text-[10px] font-black text-slate-400">${i}</span>
                     `;
                     grid.appendChild(div);
                 }
-
-                if(currentTool === 'Rearrange') new Sortable(grid, { animation: 150 });
-            } else {
-                grid.innerHTML = '<div class="col-span-full py-20 text-center font-black text-slate-200 text-3xl">READY TO PROCESS</div>';
-            }
+                new Sortable(grid, { animation: 150 });
+            } 
+            else if(currentTool === 'Compress PDF') { compressPanel.classList.remove('hidden'); }
+            else if(currentTool === 'Protect PDF') { protectPanel.classList.remove('hidden'); }
         }
 
-        // --- 5. STEP 3: CORE PDF PROCESSING ---
-        async function processFinalPDF() {
-            document.getElementById('next-step-btn').innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+        // --- STEP 3 LOGIC: PDF CORE ENGINE ---
+        async function processFinalDocument() {
+            document.getElementById('next-btn').innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Processing...';
             
             try {
                 const finalDoc = await PDFDocument.create();
 
                 if(currentTool === 'Rearrange') {
                     const source = await PDFDocument.load(await uploadedFiles[0].arrayBuffer());
-                    const order = Array.from(document.getElementById('rearrange-grid').children).map(c => parseInt(c.getAttribute('data-index')));
-                    const pages = await finalDoc.copyPages(source, order);
-                    pages.forEach(p => finalDoc.addPage(p));
-                } else if(currentTool === 'Merge PDF') {
+                    const order = Array.from(document.getElementById('rearrange-container').children).map(c => parseInt(c.getAttribute('data-id')));
+                    const copiedPages = await finalDoc.copyPages(source, order);
+                    copiedPages.forEach(p => finalDoc.addPage(p));
+                } 
+                else if(currentTool === 'Merge PDF') {
                     for(let f of uploadedFiles) {
                         const d = await PDFDocument.load(await f.arrayBuffer());
                         const ps = await finalDoc.copyPages(d, d.getPageIndices());
                         ps.forEach(p => finalDoc.addPage(p));
                     }
-                } else if(currentTool === 'JPG to PDF') {
+                }
+                else if(currentTool === 'JPG to PDF') {
                     for(let f of uploadedFiles) {
                         const img = f.type.includes('png') ? await finalDoc.embedPng(await f.arrayBuffer()) : await finalDoc.embedJpg(await f.arrayBuffer());
                         const p = finalDoc.addPage([img.width, img.height]);
                         p.drawImage(img, { x:0, y:0, width: img.width, height: img.height });
                     }
-                } else {
-                    // Simple passthrough for other tools
-                    const d = await PDFDocument.load(await uploadedFiles[0].arrayBuffer());
-                    const ps = await finalDoc.copyPages(d, d.getPageIndices());
+                }
+                else {
+                    // Default Passthrough
+                    const source = await PDFDocument.load(await uploadedFiles[0].arrayBuffer());
+                    const ps = await finalDoc.copyPages(source, source.getPageIndices());
                     ps.forEach(p => finalDoc.addPage(p));
                 }
 
                 const bytes = await finalDoc.save();
-                finalPdfBlob = new Blob([bytes], {type: 'application/pdf'});
+                finalBlob = new Blob([bytes], {type: 'application/pdf'});
 
-                // Prepare Step 3 UI
-                document.getElementById('res-size').innerText = (bytes.length/1024/1024).toFixed(2) + ' MB';
-                document.getElementById('res-pages').innerText = finalDoc.getPageCount();
-                
-                // Render Final Preview
+                // Final Preview Rendering
                 const pdfPrev = await pdfjsLib.getDocument({data: bytes}).promise;
-                const firstPage = await pdfPrev.getPage(1);
+                const page = await pdfPrev.getPage(1);
                 const canvas = document.createElement('canvas');
-                const vp = firstPage.getViewport({scale: 0.6});
+                const vp = page.getViewport({scale: 0.6});
                 canvas.height = vp.height; canvas.width = vp.width;
-                await firstPage.render({canvasContext: canvas.getContext('2d'), viewport: vp}).promise;
+                await page.render({canvasContext: canvas.getContext('2d'), viewport: vp}).promise;
                 
-                const container = document.getElementById('canvas-preview-render');
-                container.innerHTML = '';
-                container.appendChild(canvas);
+                document.getElementById('final-preview-box').innerHTML = '';
+                document.getElementById('final-preview-box').appendChild(canvas);
+                document.getElementById('meta-size').innerText = (bytes.length/1024/1024).toFixed(2) + ' MB';
+                document.getElementById('meta-pages').innerText = finalDoc.getPageCount();
 
-                // UI Switches
-                document.getElementById('step-2-area').classList.add('hidden-section');
-                document.getElementById('step-3-area').classList.remove('hidden-section');
-                document.getElementById('s3-dot').classList.add('step-active');
-                document.getElementById('next-step-btn').classList.add('hidden-section');
-                document.getElementById('prev-step-btn').classList.add('hidden-section');
-                currentStep = 3;
-
+                goToStep(3);
+                document.getElementById('next-btn').innerHTML = 'Next Step <i class="fas fa-chevron-right ml-2"></i>';
             } catch (err) {
-                alert("Processing Error: " + err.message);
-                console.error(err);
+                alert("Error Processing PDF: " + err.message);
+                document.getElementById('next-btn').innerHTML = 'Next Step <i class="fas fa-chevron-right ml-2"></i>';
             }
         }
 
-        function downloadFinal() {
+        function triggerDownload() {
             const link = document.createElement('a');
-            link.href = URL.createObjectURL(finalPdfBlob);
-            link.download = `SmartPDF_Final_${currentTool}.pdf`;
+            link.href = URL.createObjectURL(finalBlob);
+            link.download = `SmartPDF_${currentTool}_Result.pdf`;
             link.click();
         }
 
-        function toggleAuthModal() {
-            alert("Professional Login System is ready to be linked with Firebase!");
-        }
+        window.onload = () => {
+            initDashboard();
+            checkAuth();
+        };
     </script>
 </body>
 </html>
