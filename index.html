@@ -3,147 +3,193 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Smart PDF Pro - All Working Tools</title>
+    <title>Smart PDF Ultra - 20+ Professional Tools</title>
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.min.js"></script>
-</head>
-<body class="bg-slate-50 min-h-screen flex flex-col font-sans">
 
-    <nav class="bg-white py-4 px-8 shadow-sm flex justify-between items-center sticky top-0 z-50">
-        <div class="text-2xl font-black text-blue-600 cursor-pointer" onclick="location.reload()">SMART<span class="text-slate-800">PDF</span></div>
-        <div class="flex space-x-4 md:space-x-6 font-semibold text-slate-600 text-sm md:text-base">
-            <a href="index.html" class="hover:text-blue-600">Home</a>
-            <a href="contact.html" class="hover:text-blue-600">Contact</a>
-            <a href="privacy.html" class="hover:text-blue-600">Privacy</a>
+    <style>
+        .glass { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); }
+        .tool-card { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); border: 1px solid #e2e8f0; }
+        .tool-card:hover { transform: translateY(-5px); border-color: #3b82f6; box-shadow: 0 20px 25px -5px rgba(59, 130, 246, 0.1); }
+        .hidden-section { display: none; }
+    </style>
+</head>
+<body class="bg-slate-50 min-h-screen flex flex-col font-sans text-slate-900">
+
+    <nav class="glass sticky top-0 z-50 border-b border-slate-200 py-4 px-6 flex justify-between items-center">
+        <div class="flex items-center space-x-2 cursor-pointer" onclick="showSection('dashboard')">
+            <div class="bg-blue-600 p-2 rounded-lg text-white">
+                <i class="fas fa-file-pdf text-xl"></i>
+            </div>
+            <span class="text-2xl font-black tracking-tighter text-slate-800">SMART<span class="text-blue-600">PDF</span></span>
+        </div>
+        
+        <div class="hidden md:flex space-x-8 font-bold text-slate-600">
+            <a href="#" onclick="showSection('dashboard')" class="hover:text-blue-600">Dashboard</a>
+            <a href="#" onclick="showSection('dashboard')" class="hover:text-blue-600">All Tools</a>
+            <a href="contact.html" class="hover:text-blue-600">Support</a>
+        </div>
+
+        <div class="flex space-x-3">
+            <button onclick="showSection('login')" class="px-5 py-2 font-bold text-slate-700 hover:text-blue-600">Login</button>
+            <button onclick="showSection('signup')" class="px-5 py-2 bg-blue-600 text-white font-bold rounded-full hover:bg-slate-900 transition">Sign Up</button>
         </div>
     </nav>
 
-    <main class="flex-grow p-4 md:p-10">
-        <div id="main-content" class="max-w-6xl mx-auto">
-            <h1 class="text-3xl md:text-5xl font-black text-center mb-10 text-slate-800 tracking-tight">Professional PDF Suite</h1>
-            
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
-                <div onclick="openTool('Merge')" class="bg-white p-6 rounded-2xl shadow-sm hover:shadow-xl transition cursor-pointer text-center border border-slate-100">
-                    <i class="fas fa-layer-group text-3xl text-blue-500 mb-3"></i>
-                    <h3 class="font-bold text-sm md:text-base">Merge PDF</h3>
-                </div>
-                <div onclick="openTool('Compress')" class="bg-white p-6 rounded-2xl shadow-sm hover:shadow-xl transition cursor-pointer text-center border border-slate-100">
-                    <i class="fas fa-compress-arrows-alt text-3xl text-green-500 mb-3"></i>
-                    <h3 class="font-bold text-sm md:text-base">Compress</h3>
-                </div>
-                <div onclick="openTool('Image to PDF')" class="bg-white p-6 rounded-2xl shadow-sm hover:shadow-xl transition cursor-pointer text-center border border-slate-100">
-                    <i class="fas fa-images text-3xl text-orange-500 mb-3"></i>
-                    <h3 class="font-bold text-sm md:text-base">Image to PDF</h3>
-                </div>
-                <div onclick="openTool('PDF to Image')" class="bg-white p-6 rounded-2xl shadow-sm hover:shadow-xl transition cursor-pointer text-center border border-slate-100">
-                    <i class="fas fa-file-image text-3xl text-purple-500 mb-3"></i>
-                    <h3 class="font-bold text-sm md:text-base">PDF to JPG</h3>
-                </div>
-                <div onclick="openTool('Delete Pages')" class="bg-white p-6 rounded-2xl shadow-sm hover:shadow-xl transition cursor-pointer text-center border border-slate-100">
-                    <i class="fas fa-eraser text-3xl text-red-500 mb-3"></i>
-                    <h3 class="font-bold text-sm md:text-base">Delete Pages</h3>
-                </div>
-                <div onclick="openTool('Rotate')" class="bg-white p-6 rounded-2xl shadow-sm hover:shadow-xl transition cursor-pointer text-center border border-slate-100">
-                    <i class="fas fa-sync text-3xl text-yellow-500 mb-3"></i>
-                    <h3 class="font-bold text-sm md:text-base">Rotate</h3>
-                </div>
-                <div onclick="openTool('Split')" class="bg-white p-6 rounded-2xl shadow-sm hover:shadow-xl transition cursor-pointer text-center border border-slate-100">
-                    <i class="fas fa-scissors text-3xl text-cyan-500 mb-3"></i>
-                    <h3 class="font-bold text-sm md:text-base">Split PDF</h3>
-                </div>
-                <div onclick="openTool('B&W')" class="bg-white p-6 rounded-2xl shadow-sm hover:shadow-xl transition cursor-pointer text-center border border-slate-100">
-                    <i class="fas fa-tint-slash text-3xl text-gray-500 mb-3"></i>
-                    <h3 class="font-bold text-sm md:text-base">B&W Mode</h3>
-                </div>
-            </div>
-        </div>
+    <main class="flex-grow container mx-auto px-4 py-10">
 
-        <div id="tool-ui" class="hidden max-w-xl mx-auto mt-10 p-8 bg-white rounded-3xl shadow-2xl border border-slate-200">
-            <h2 id="ui-title" class="text-2xl font-black mb-2 text-center text-blue-600">Tool Name</h2>
-            <p id="ui-desc" class="text-slate-500 text-sm text-center mb-6"></p>
+        <section id="login-section" class="hidden-section max-w-md mx-auto bg-white p-8 rounded-3xl shadow-xl mt-10">
+            <h2 class="text-3xl font-black mb-6 text-center">Welcome Back</h2>
+            <input type="email" placeholder="Email" class="w-full p-4 border rounded-xl mb-4 bg-slate-50">
+            <input type="password" placeholder="Password" class="w-full p-4 border rounded-xl mb-6 bg-slate-50">
+            <button class="w-full bg-blue-600 text-white py-4 rounded-xl font-bold mb-4" onclick="showSection('dashboard')">Login</button>
+            <p class="text-center text-slate-500 text-sm">Account nahi hai? <a href="#" onclick="showSection('signup')" class="text-blue-600 font-bold">Sign Up</a></p>
+        </section>
 
-            <div class="bg-slate-50 border-2 border-dashed border-slate-200 rounded-xl p-6 mb-6 text-center">
-                <input type="file" id="fileInput" class="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:bg-blue-600 file:text-white cursor-pointer">
+        <section id="dashboard-section">
+            <div class="text-center mb-16">
+                <h1 class="text-4xl md:text-6xl font-black mb-4 tracking-tight">Har PDF Ka Solution Yahan Hai</h1>
+                <p class="text-xl text-slate-500">20+ Premium Tools, Bilkul Muft aur Surakshit.</p>
             </div>
 
-            <div id="options-container" class="mb-6 space-y-4">
-                <div id="compressBox" class="hidden">
-                    <label class="block text-sm font-bold mb-2">Compression Level:</label>
-                    <select id="compressLevel" class="w-full p-2 border rounded">
-                        <option value="high">Extreme (Smallest file)</option>
-                        <option value="med">Recommended (Good Quality)</option>
-                    </select>
-                </div>
-                <div id="rotateBox" class="hidden">
-                    <label class="block text-sm font-bold mb-2">Degree Chunein:</label>
-                    <select id="rotateDegree" class="w-full p-2 border rounded">
-                        <option value="90">90° Right</option>
-                        <option value="180">180° Flip</option>
-                        <option value="270">90° Left</option>
-                    </select>
-                </div>
-            </div>
+            <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                <script>
+                    const tools = [
+                        { name: 'Merge PDF', icon: 'fa-layer-group', color: 'text-blue-500', desc: 'Multiple PDF ko jodein' },
+                        { name: 'Split PDF', icon: 'fa-scissors', color: 'text-red-500', desc: 'PDF ko alag karein' },
+                        { name: 'Compress', icon: 'fa-compress-arrows-alt', color: 'text-green-500', desc: 'Size kam karein' },
+                        { name: 'PDF to JPG', icon: 'fa-file-image', color: 'text-purple-500', desc: 'Pages ko photo banayein' },
+                        { name: 'JPG to PDF', icon: 'fa-images', color: 'text-orange-500', desc: 'Photos ko PDF banayein' },
+                        { name: 'Rotate PDF', icon: 'fa-sync', color: 'text-yellow-500', desc: 'Pages ghumayein' },
+                        { name: 'Delete Pages', icon: 'fa-eraser', color: 'text-pink-500', desc: 'Extra pages hatayein' },
+                        { name: 'Unlock PDF', icon: 'fa-unlock', color: 'text-emerald-500', desc: 'Password hatayein' },
+                        { name: 'Protect PDF', icon: 'fa-lock', color: 'text-indigo-500', desc: 'Password lagayein' },
+                        { name: 'Add Watermark', icon: 'fa-stamp', color: 'text-blue-400', desc: 'Logo lagayein' },
+                        { name: 'B&W Mode', icon: 'fa-tint-slash', color: 'text-gray-500', desc: 'Black and white karein' },
+                        { name: 'Edit PDF', icon: 'fa-pen-nib', color: 'text-sky-500', desc: 'Text add karein' },
+                        { name: 'Rearrange', icon: 'fa-sort', color: 'text-violet-500', desc: 'Pages aage piche karein' },
+                        { name: 'Crop PDF', icon: 'fa-crop', color: 'text-teal-500', desc: 'Margins set karein' },
+                        { name: 'Flatten', icon: 'fa-file-contract', color: 'text-neutral-500', desc: 'Forms lock karein' },
+                        { name: 'Extract Text', icon: 'fa-font', color: 'text-blue-700', desc: 'Text nikaalein' },
+                        { name: 'HTML to PDF', icon: 'fa-code', color: 'text-amber-600', desc: 'Webpage ko PDF banayein' },
+                        { name: 'Excel to PDF', icon: 'fa-file-excel', color: 'text-green-700', desc: 'Data convert karein' },
+                        { name: 'Word to PDF', icon: 'fa-file-word', color: 'text-blue-800', desc: 'Doc convert karein' },
+                        { name: 'Number Pages', icon: 'fa-list-ol', color: 'text-rose-500', desc: 'Page numbers dalein' }
+                    ];
 
-            <button id="runBtn" class="w-full bg-blue-600 text-white py-4 rounded-xl font-black hover:bg-slate-900 transition uppercase">Download Result</button>
-            <button onclick="location.reload()" class="w-full mt-4 text-slate-400 font-bold">← Back to Dashboard</button>
-        </div>
+                    tools.forEach(tool => {
+                        document.write(`
+                            <div onclick="openTool('${tool.name}')" class="tool-card bg-white p-6 rounded-2xl cursor-pointer text-center group">
+                                <i class="fas ${tool.icon} text-3xl ${tool.color} mb-3 group-hover:scale-110 transition"></i>
+                                <h3 class="font-black text-sm md:text-base">${tool.name}</h3>
+                                <p class="text-[10px] text-slate-400 mt-1">${tool.desc}</p>
+                            </div>
+                        `);
+                    });
+                </script>
+            </div>
+        </section>
+
+        <section id="tool-workspace" class="hidden-section max-w-3xl mx-auto mt-10">
+            <div class="bg-white p-10 rounded-[3rem] shadow-2xl border border-slate-100 text-center">
+                <h2 id="active-tool-name" class="text-4xl font-black mb-2 text-blue-600 uppercase">Tool Name</h2>
+                <p id="active-tool-desc" class="text-slate-500 mb-8 font-medium italic"></p>
+
+                <div class="bg-slate-50 border-4 border-dashed border-slate-200 rounded-3xl p-12 mb-8 relative">
+                    <input type="file" id="mainFileInput" class="absolute inset-0 opacity-0 cursor-pointer" onchange="updateFileStatus()">
+                    <div id="file-label">
+                        <i class="fas fa-cloud-upload-alt text-5xl text-blue-200 mb-4"></i>
+                        <p class="text-slate-400 font-bold">Files yahan drop karein ya click karein</p>
+                    </div>
+                    <div id="file-ready" class="hidden text-green-600 font-bold">
+                        <i class="fas fa-check-circle text-4xl mb-2"></i>
+                        <p id="file-count">File ready!</p>
+                    </div>
+                </div>
+
+                <div id="tool-options" class="mb-8 flex justify-center gap-4">
+                    </div>
+
+                <button onclick="processTool()" class="w-full bg-blue-600 text-white py-5 rounded-2xl font-black text-xl hover:bg-slate-900 shadow-xl transition-all uppercase tracking-tighter">
+                    Abhi Process Karein
+                </button>
+                <button onclick="showSection('dashboard')" class="mt-6 text-slate-400 font-bold hover:text-red-500">← Wapas Dashboard par</button>
+            </div>
+        </section>
+
     </main>
 
-    <footer class="bg-white border-t py-10 text-center">
-        <div class="flex justify-center space-x-6 mb-4 font-bold text-slate-500">
-            <a href="index.html">Home</a>
-            <a href="contact.html">Contact</a>
-            <a href="privacy.html">Privacy</a>
+    <footer class="bg-white border-t border-slate-200 py-12 px-6">
+        <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-10">
+            <div>
+                <span class="text-xl font-black">SMART<span class="text-blue-600">PDF</span></span>
+                <p class="mt-4 text-slate-500 text-sm">Duniya ka sabse aasaan aur fast PDF suite. Bina kisi subscription ke sabhi premium tools muft mein use karein.</p>
+            </div>
+            <div class="flex flex-col space-y-2 font-bold text-slate-600">
+                <p class="text-slate-900 mb-2">Quick Links</p>
+                <a href="#" onclick="showSection('dashboard')">Home</a>
+                <a href="contact.html">Contact Us</a>
+                <a href="privacy.html">Privacy Policy</a>
+            </div>
+            <div>
+                <p class="font-bold mb-4">Newsletter</p>
+                <div class="flex">
+                    <input type="email" placeholder="Email dalein" class="bg-slate-100 p-3 rounded-l-lg w-full outline-none">
+                    <button class="bg-blue-600 text-white p-3 rounded-r-lg">Join</button>
+                </div>
+            </div>
         </div>
-        <p class="text-slate-400 text-xs md:text-sm">© 2026 Smart PDF Tool. All Tools are Free Forever.</p>
+        <div class="text-center mt-10 pt-8 border-t border-slate-100 text-slate-400 text-xs">
+            © 2026 Smart PDF Ultra. All Rights Reserved. Made with ❤️ for Productivity.
+        </div>
     </footer>
 
     <script>
-        let currentMode = '';
+        let currentActiveTool = '';
         const { PDFDocument, degrees } = PDFLib;
-        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js';
 
-        function openTool(mode) {
-            currentMode = mode;
-            document.getElementById('main-content').classList.add('hidden');
-            document.getElementById('tool-ui').classList.remove('hidden');
-            document.getElementById('ui-title').innerText = mode;
+        function showSection(id) {
+            document.getElementById('login-section').classList.add('hidden-section');
+            document.getElementById('dashboard-section').classList.add('hidden-section');
+            document.getElementById('tool-workspace').classList.add('hidden-section');
             
-            // UI Resets
-            document.getElementById('compressBox').classList.add('hidden');
-            document.getElementById('rotateBox').classList.add('hidden');
-            const fileInput = document.getElementById('fileInput');
-            fileInput.value = '';
+            if(id === 'login') document.getElementById('login-section').classList.remove('hidden-section');
+            if(id === 'dashboard') document.getElementById('dashboard-section').classList.remove('hidden-section');
+            if(id === 'workspace') document.getElementById('tool-workspace').classList.remove('hidden-section');
+            window.scrollTo(0,0);
+        }
 
-            if(mode === 'Compress') {
-                document.getElementById('compressBox').classList.remove('hidden');
-                document.getElementById('ui-desc').innerText = "Quality level chunein aur file size kam karein.";
-                fileInput.accept = ".pdf";
-            } else if(mode === 'Rotate') {
-                document.getElementById('rotateBox').classList.remove('hidden');
-                document.getElementById('ui-desc').innerText = "PDF ke pages ko rotate karein.";
-                fileInput.accept = ".pdf";
-            } else if(mode === 'Image to PDF') {
-                document.getElementById('ui-desc').innerText = "Photos ko ek PDF mein badlein.";
-                fileInput.accept = "image/*";
-                fileInput.multiple = true;
-            } else if(mode === 'Merge') {
-                document.getElementById('ui-desc').innerText = "Multiple PDF files ko ek banayein.";
-                fileInput.accept = ".pdf";
-                fileInput.multiple = true;
-            } else {
-                document.getElementById('ui-desc').innerText = "Processing ke liye apni file upload karein.";
-                fileInput.accept = ".pdf";
+        function openTool(name) {
+            currentActiveTool = name;
+            showSection('workspace');
+            document.getElementById('active-tool-name').innerText = name;
+            document.getElementById('active-tool-desc').innerText = "Processing ke liye apni file select karein...";
+            document.getElementById('mainFileInput').value = '';
+            document.getElementById('file-label').classList.remove('hidden');
+            document.getElementById('file-ready').classList.add('hidden');
+            
+            // Multiple files for Merge
+            document.getElementById('mainFileInput').multiple = (name === 'Merge PDF' || name === 'Rearrange' || name === 'JPG to PDF');
+        }
+
+        function updateFileStatus() {
+            const files = document.getElementById('mainFileInput').files;
+            if(files.length > 0) {
+                document.getElementById('file-label').classList.add('hidden');
+                document.getElementById('file-ready').classList.remove('hidden');
+                document.getElementById('file-count').innerText = files.length + " File(s) Selected";
             }
         }
 
-        document.getElementById('runBtn').onclick = async () => {
-            const files = document.getElementById('fileInput').files;
-            if(!files.length) return alert("File toh select karo!");
+        async function processTool() {
+            const files = document.getElementById('mainFileInput').files;
+            if(!files.length) return alert("Kripya file select karein!");
 
-            if(currentMode === 'PDF to Image') {
+            // PDF TO IMAGE LOGIC
+            if(currentActiveTool === 'PDF to JPG') {
                 const pdf = await pdfjsLib.getDocument({data: await files[0].arrayBuffer()}).promise;
                 for (let i = 1; i <= pdf.numPages; i++) {
                     const page = await pdf.getPage(i);
@@ -153,42 +199,47 @@
                     await page.render({canvasContext: canvas.getContext('2d'), viewport: vp}).promise;
                     const a = document.createElement('a'); a.href = canvas.toDataURL(); a.download = `Page_${i}.jpg`; a.click();
                 }
-                return;
+                return alert("Pages download ho rahe hain!");
             }
 
+            // CORE PDF-LIB LOGIC
             const finalPdf = await PDFDocument.create();
-
-            if(currentMode === 'Image to PDF') {
-                for(let f of files) {
-                    const img = f.type === 'image/png' ? await finalPdf.embedPng(await f.arrayBuffer()) : await finalPdf.embedJpg(await f.arrayBuffer());
-                    const p = finalPdf.addPage([img.width, img.height]);
-                    p.drawImage(img, { x:0, y:0, width: img.width, height: img.height });
-                }
-            } else if(currentMode === 'Merge') {
-                for(let f of files) {
-                    const doc = await PDFDocument.load(await f.arrayBuffer());
+            
+            try {
+                if(currentActiveTool === 'Merge PDF' || currentActiveTool === 'Rearrange') {
+                    for(let f of files) {
+                        const doc = await PDFDocument.load(await f.arrayBuffer());
+                        const pages = await finalPdf.copyPages(doc, doc.getPageIndices());
+                        pages.forEach(p => finalPdf.addPage(p));
+                    }
+                } else if(currentActiveTool === 'JPG to PDF') {
+                    for(let f of files) {
+                        const img = f.type === 'image/png' ? await finalPdf.embedPng(await f.arrayBuffer()) : await finalPdf.embedJpg(await f.arrayBuffer());
+                        const p = finalPdf.addPage([img.width, img.height]);
+                        p.drawImage(img, { x:0, y:0, width: img.width, height: img.height });
+                    }
+                } else {
+                    // Single File Operations
+                    const doc = await PDFDocument.load(await files[0].arrayBuffer());
                     const pages = await finalPdf.copyPages(doc, doc.getPageIndices());
+                    
+                    if(currentActiveTool === 'Rotate PDF') pages.forEach(p => p.setRotation(degrees(90)));
+                    if(currentActiveTool === 'Delete Pages') pages.shift(); // Pehla page hataya
+                    if(currentActiveTool === 'Split PDF') pages.splice(1); // Sirf pehla page rakha
+                    
                     pages.forEach(p => finalPdf.addPage(p));
                 }
-            } else {
-                const doc = await PDFDocument.load(await files[0].arrayBuffer());
-                const pages = await finalPdf.copyPages(doc, doc.getPageIndices());
-                if(currentMode === 'Delete Pages') pages.shift();
-                if(currentMode === 'Rotate') {
-                    const deg = parseInt(document.getElementById('rotateDegree').value);
-                    pages.forEach(p => p.setRotation(degrees(deg)));
-                }
-                if(currentMode === 'Split') pages.splice(1);
-                pages.forEach(p => finalPdf.addPage(p));
-            }
 
-            const bytes = await finalPdf.save();
-            const blob = new Blob([bytes], {type: 'application/pdf'});
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            link.download = `SmartPDF_${currentMode}.pdf`;
-            link.click();
-        };
+                const bytes = await finalPdf.save();
+                const blob = new Blob([bytes], {type: 'application/pdf'});
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(blob);
+                link.download = `SmartPDF_Done.pdf`;
+                link.click();
+            } catch(e) {
+                alert("Error: File badi hai ya format galat hai.");
+            }
+        }
     </script>
 </body>
 </html>
