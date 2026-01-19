@@ -3,43 +3,85 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mera PDF Tool - Free</title>
+    <title>Multi-PDF Tool | Free Sejda Clone</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
-    <style>
-        body { font-family: 'Segoe UI', sans-serif; background-color: #f0f2f5; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .container { background: white; padding: 40px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); text-align: center; max-width: 400px; }
-        h1 { color: #333; }
-        input[type="file"] { margin: 20px 0; border: 1px solid #ddd; padding: 10px; width: 100%; border-radius: 5px; }
-        button { background: #007bff; color: white; border: none; padding: 12px 25px; font-size: 16px; border-radius: 5px; cursor: pointer; transition: 0.3s; }
-        button:hover { background: #0056b3; }
-        p { color: #666; font-size: 14px; }
-    </style>
 </head>
-<body>
-    <div class="container">
-        <h1>PDF Joiner</h1>
-        <p>Do ya zyada PDF chunein aur unhe ek banayein.</p>
-        <input type="file" id="fileInput" multiple accept=".pdf">
-        <button onclick="mergePDFs()">Join & Download</button>
+<body class="bg-gray-50 font-sans">
+
+    <nav class="bg-white shadow-sm p-4 flex justify-between items-center">
+        <h1 class="text-2xl font-bold text-blue-600">MyPDFTool</h1>
+        <div class="space-x-4">
+            <button onclick="showTool('merge')" class="text-gray-600 hover:text-blue-600">Merge</button>
+            <button onclick="showTool('split')" class="text-gray-600 hover:text-blue-600">Split</button>
+            <button onclick="showTool('delete')" class="text-gray-600 hover:text-blue-600">Delete Pages</button>
+        </div>
+    </nav>
+
+    <div class="max-w-4xl mx-auto mt-10 p-6 bg-white rounded-xl shadow-md text-center">
+        
+        <div id="merge-tool">
+            <h2 class="text-xl font-bold mb-4">PDF Merge Tool</h2>
+            <p class="mb-6 text-gray-500">Do ya zyada PDF ko ek saath jodein.</p>
+            <input type="file" id="mergeInput" multiple accept=".pdf" class="block w-full border p-2 mb-4 rounded">
+            <button onclick="doMerge()" class="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 w-full">Merge & Download</button>
+        </div>
+
+        <div id="split-tool" class="hidden">
+            <h2 class="text-xl font-bold mb-4">PDF Split Tool</h2>
+            <p class="mb-6 text-gray-500">PDF ke har page ko alag-alag karein.</p>
+            <input type="file" id="splitInput" accept=".pdf" class="block w-full border p-2 mb-4 rounded">
+            <button onclick="doSplit()" class="bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700 w-full">Split & Download All</button>
+        </div>
+
+        <div id="delete-tool" class="hidden">
+            <h2 class="text-xl font-bold mb-4">Delete Pages</h2>
+            <p class="mb-6 text-gray-500">Pehla page delete karke download karein.</p>
+            <input type="file" id="deleteInput" accept=".pdf" class="block w-full border p-2 mb-4 rounded">
+            <button onclick="doDelete()" class="bg-red-600 text-white px-6 py-2 rounded hover:bg-red-700 w-full">Delete 1st Page & Download</button>
+        </div>
+
     </div>
 
     <script>
-        async function mergePDFs() {
-            const files = document.getElementById('fileInput').files;
-            if (files.length < 2) { alert("Kam se kam 2 files select karein!"); return; }
-            const { PDFDocument } = PDFLib;
+        const { PDFDocument } = PDFLib;
+
+        // Tool Switching Logic
+        function showTool(toolName) {
+            ['merge-tool', 'split-tool', 'delete-tool'].forEach(id => {
+                document.getElementById(id).classList.add('hidden');
+            });
+            document.getElementById(toolName + '-tool').classList.remove('hidden');
+        }
+
+        // --- MERGE LOGIC ---
+        async function doMerge() {
+            const files = document.getElementById('mergeInput').files;
+            if (files.length < 2) return alert("Kam se kam 2 files select karein");
             const mergedPdf = await PDFDocument.create();
             for (let file of files) {
-                const arrayBuffer = await file.arrayBuffer();
-                const pdf = await PDFDocument.load(arrayBuffer);
-                const copiedPages = await mergedPdf.copyPages(pdf, pdf.getPageIndices());
-                copiedPages.forEach((page) => mergedPdf.addPage(page));
+                const pdf = await PDFDocument.load(await file.arrayBuffer());
+                const pages = await mergedPdf.copyPages(pdf, pdf.getPageIndices());
+                pages.forEach(p => mergedPdf.addPage(p));
             }
-            const pdfBytes = await mergedPdf.save();
-            const blob = new Blob([pdfBytes], { type: 'application/pdf' });
-            const link = document.createElement('a');
+            download(await mergedPdf.save(), "merged.pdf");
+        }
+
+        // --- DELETE PAGE LOGIC ---
+        async function doDelete() {
+            const file = document.getElementById('deleteInput').files[0];
+            if (!file) return alert("File chunein");
+            const pdf = await PDFDocument.load(await file.arrayBuffer());
+            pdf.removePage(0); // Pehla page uda dega
+            download(await pdf.save(), "deleted_page.pdf");
+        }
+
+        // Helper Download Function
+        function download(bytes, name) {
+            const blob = new Blob([bytes], { type: "application/pdf" });
+            const link = document.createElement("a");
             link.href = URL.createObjectURL(blob);
-            link.download = 'merged.pdf';
+            link.download = name;
             link.click();
         }
     </script>
